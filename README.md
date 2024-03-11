@@ -19,17 +19,17 @@
 # For example:
 ####    The function filtered_data() takes no arguments.
 ####    The function between(min, max) takes two arguments, a minimum and maximum value.
-#    Arguments can be positional or keyword arguments, labeled with a parameter name.
+####   Arguments can be positional or keyword arguments, labeled with a parameter name.
 
-# The function body is indented (consistently!) after the colon. 
-# Use the return keyword to return a value from a function.
+#### The function body is indented (consistently!) after the colon. 
+#### Use the return keyword to return a value from a function.
 
 # Calling Functions
 # -----------------
-# Call a function by using its name followed by parentheses and any required arguments.
+#### Call a function by using its name followed by parentheses and any required arguments.
     
 # Decorators
 # ----------
-# Use the @ symbol to decorate a function with a decorator.
-# Decorators a concise way of calling a function on a function.
-# We don't typically write decorators, but we often use them.
+#### Use the @ symbol to decorate a function with a decorator.
+#### Decorators a concise way of calling a function on a function.
+#### We don't typically write decorators, but we often use them.
