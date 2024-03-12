@@ -1,6 +1,6 @@
 import plotly.express as px
 from shiny.express import input, ui
-from shiny import render, reactive
+from shiny import render
 from shinywidgets import render_plotly
 import pandas as pd
 import seaborn as sns
@@ -22,11 +22,11 @@ with ui.sidebar(open="open"):
     )
 
     # Use ui.input_numeric() to create a numeric input for the number of Plotly histogram bins
-    ui.input_numeric("plotly_bin_count", "plotly bin count", 100)
-    
+    ui.input_numeric("plotly_bin_count", "plotly bin count", 40)
+
     # Use ui.input_slider() to create a slider input for the number of Seaborn bins
-    ui.input_slider("seaborn_bin_count", "seaborn bin count", 1, 200, 100)
-    
+    ui.input_slider("seaborn_bin_count", "seaborn bin count", 1, 40, 20)
+
     # Use ui.input_checkbox_group() to create a checkbox group input to filter the species
     ui.input_checkbox_group(
         "selected_species_list",
@@ -38,7 +38,7 @@ with ui.sidebar(open="open"):
 
     # Use ui.hr() to add a horizontal rule to the sidebar
     ui.hr()
-    
+
     # Use ui.a() to add a hyperlink to the sidebar
     ui.a(
         "Adrian's GitHub Repo",
@@ -47,20 +47,21 @@ with ui.sidebar(open="open"):
     )
 
 # create a layout to include 2 cards with a data table and data grid
-with ui.layout_columns(col_widths=(4, 8)):
-    with ui.card(full_screen=True): # full_screen option to view expanded table/grid
+with ui.layout_columns():
+    with ui.card(full_screen=True):  # full_screen option to view expanded table/grid
         ui.h2("Penguin Data Table")
 
         @render.data_frame
         def penguins_datatable():
             return render.DataTable(penguins_df)
 
-    with ui.card(full_screen=True): # full_screen option to view expanded table/grid
+    with ui.card(full_screen=True):  # full_screen option to view expanded table/grid
         ui.h2("Penguin Data Grid")
 
         @render.data_frame
         def penguins_datagrid():
             return render.DataGrid(penguins_df)
+
 
 # added a horizontal rule
 ui.hr()
@@ -72,18 +73,31 @@ with ui.layout_columns():
 
         @render_plotly
         def plotly_histogram():
-            return px.histogram(penguins_df, x="species")
+            return px.histogram(
+                penguins_df,
+                x=input.selected_attribute(),
+                nbins=input.plotly_bin_count(),
+                color="species",
+            )
 
     with ui.card(full_screen=True):
         ui.h2("Seaborn Histogram")
 
         @render.plot(alt="Species Seaborn Histogram")
         def seaborn_histogram():
-            return sns.histplot(data=penguins_df, x="species")
+            seaborn_plot = sns.histplot(
+                data=penguins_df,
+                x=input.selected_attribute(),
+                bins=input.seaborn_bin_count(),
+                multiple="dodge",
+                hue="species",
+            )
+            seaborn_plot.set_title("Species Seaborn Histogram")
+            seaborn_plot.set_ylabel("Measurement")
 
     with ui.card(full_screen=True):
         ui.h2("Species Plotly Scatterplot")
-        
+
         @render_plotly
         def plotly_scatterplot():
             return px.scatter(
@@ -94,15 +108,3 @@ with ui.layout_columns():
                 color="species",
                 symbol="species",
             )
-# --------------------------------------------------------
-# Reactive calculations and effects
-# --------------------------------------------------------
-
-# Add a reactive calculation to filter the data
-# By decorating the function with @reactive, we can use the function to filter the data
-# The function will be called whenever an input functions used to generate that output changes.
-# Any output that depends on the reactive function (e.g., filtered_data()) will be updated when the data changes.
-
-    @reactive.calc
-    def filtered_data():
-        return penguins_df
