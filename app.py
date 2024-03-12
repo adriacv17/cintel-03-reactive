@@ -53,14 +53,14 @@ with ui.layout_columns():
 
         @render.data_frame
         def penguins_datatable():
-            return render.DataTable(penguins_df)
+            return render.DataTable(filtered_data())
 
     with ui.card(full_screen=True):  # full_screen option to view expanded table/grid
         ui.h2("Penguin Data Grid")
 
         @render.data_frame
         def penguins_datagrid():
-            return render.DataGrid(penguins_df)
+            return render.DataGrid(filtered_data())
 
 
 # added a horizontal rule
@@ -74,7 +74,7 @@ with ui.layout_columns():
         @render_plotly
         def plotly_histogram():
             return px.histogram(
-                penguins_df,
+                filtered_data(),
                 x=input.selected_attribute(),
                 nbins=input.plotly_bin_count(),
                 color="species",
@@ -86,7 +86,7 @@ with ui.layout_columns():
         @render.plot(alt="Species Seaborn Histogram")
         def seaborn_histogram():
             seaborn_plot = sns.histplot(
-                data=penguins_df,
+                data=filtered_data(),
                 x=input.selected_attribute(),
                 bins=input.seaborn_bin_count(),
                 multiple="dodge",
@@ -101,7 +101,7 @@ with ui.layout_columns():
         @render_plotly
         def plotly_scatterplot():
             return px.scatter(
-                penguins_df,
+                filtered_data(),
                 title="Plotly Scatterplot",
                 x="body_mass_g",
                 y="bill_length_mm",
@@ -109,13 +109,14 @@ with ui.layout_columns():
                 symbol="species",
             )
             # --------------------------------------------------------
-# Reactive calculations and effects
-# --------------------------------------------------------
 
-# Add a reactive calculation to filter the data
-# By decorating the function with @reactive, we can use the function to filter the data
-# The function will be called whenever an input functions used to generate that output changes.
-# Any output that depends on the reactive function (e.g., filtered_data()) will be updated when the data changes.
+    # Reactive calculations and effects
+    # --------------------------------------------------------
+
+    # Add a reactive calculation to filter the data
+    # By decorating the function with @reactive, we can use the function to filter the data
+    # The function will be called whenever an input functions used to generate that output changes.
+    # Any output that depends on the reactive function (e.g., filtered_data()) will be updated when the data changes.
 
     @reactive.calc
     def filtered_data():
