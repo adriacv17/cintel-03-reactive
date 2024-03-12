@@ -17,7 +17,14 @@ with ui.sidebar(open="open"):
     ui.h2("Sidebar")
     ui.input_selectize(
         "selected_attribute",
-        "select attribute",
+        "select attribute for all",
+        ["bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"],
+    )
+
+    # Add a second selectize to make scatterplot interactive
+    ui.input_selectize(
+        "second_selected_attribute",
+        "select scatterplot attribute #2",
         ["bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"],
     )
 
@@ -32,7 +39,7 @@ with ui.sidebar(open="open"):
         "selected_species_list",
         "select species",
         ["Adelie", "Gentoo", "Chinstrap"],
-        selected=["Gentoo", "Chinstrap"],
+        selected=["Adelie"],
         inline=True,
     )
 
@@ -103,8 +110,8 @@ with ui.layout_columns():
             return px.scatter(
                 filtered_data(),
                 title="Plotly Scatterplot",
-                x="body_mass_g",
-                y="bill_length_mm",
+                x=input.selected_attribute(),
+                y=input.second_selected_attribute(),
                 color="species",
                 symbol="species",
             )
@@ -120,4 +127,4 @@ with ui.layout_columns():
 
     @reactive.calc
     def filtered_data():
-        return penguins_df
+        return penguins_df[penguins_df["species"].isin(input.selected_species_list())]
